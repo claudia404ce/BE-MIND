@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Be Mind - Citas</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  margin: 0;
+}
+
+.container {
+  max-width: 500px;
+  margin: 40px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+h1 {
+  text-align: center;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px;
+  width: 100%;
+  background: #764ba2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #5a3d8a;
+}
+
+li {
+  background: #f3f3f3;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.delete {
+  background: red;
+  color: white;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.rec {
+  margin-top: 15px;
+  background: #e9f7ef;
+  padding: 10px;
+  border-radius: 5px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+<h1>🧠 Be Mind</h1>
+
+<h3>Reservar una cita</h3>
+
+<label>Especialista</label>
+<select id="especialista">
+  <option value="">Selecciona</option>
+  <option value="Psicólogo">Psicólogo</option>
+  <option value="Coach">Coach</option>
+  <option value="Terapeuta">Terapeuta</option>
+</select>
+
+<label>Fecha</label>
+<input type="date" id="fecha">
+
+<label>Hora</label>
+<input type="time" id="hora">
+
+<button onclick="guardarCita()">Reservar cita</button>
+
+<div class="rec" id="rec">
+Recomendaciones aparecerán aquí...
+</div>
+
+<h3>Mis citas</h3>
+<ul id="lista"></ul>
+
+</div>
+
+<script>
+
+let citas = JSON.parse(localStorage.getItem("citas")) || [];
+
+function guardarCita() {
+  let especialista = document.getElementById("especialista").value;
+  let fecha = document.getElementById("fecha").value;
+  let hora = document.getElementById("hora").value;
+
+  if (!especialista || !fecha || !hora) {
+    alert("Completa todos los campos");
+    return;
+  }
+
+  let nueva = { especialista, fecha, hora };
+
+  citas.push(nueva);
+  localStorage.setItem("citas", JSON.stringify(citas));
+
+  generarRecomendacion(especialista);
+  mostrarCitas();
+}
+
+function mostrarCitas() {
+  let lista = document.getElementById("lista");
+  lista.innerHTML = "";
+
+  citas.forEach((cita, index) => {
+    let li = document.createElement("li");
+
+    li.innerHTML = `
+      ${cita.especialista} - ${cita.fecha} ${cita.hora}
+      <button class="delete" onclick="eliminarCita(${index})">X</button>
+    `;
+
+    lista.appendChild(li);
+  });
+}
+
+function eliminarCita(index) {
+  citas.splice(index, 1);
+  localStorage.setItem("citas", JSON.stringify(citas));
+  mostrarCitas();
+}
+
+function generarRecomendacion(tipo) {
+  let mensaje = "";
+
+  if (tipo === "Psicólogo") {
+    mensaje = "Recuerda ser sincera/o en la consulta.";
+  } else if (tipo === "Coach") {
+    mensaje = "Define un objetivo antes de la sesión.";
+  } else {
+    mensaje = "Relájate antes de tu cita.";
+  }
+
+  document.getElementById("rec").textContent = mensaje;
+}
+
+mostrarCitas();
+
+</script>
+
+</body>
+</html>
+
+
